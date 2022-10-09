@@ -5,20 +5,39 @@ import keyboard
 import time
 from huscii.renderer import HUSCIIRenderer
 
-def main():
-    renderer = HUSCIIRenderer()
-    y = 0
-    while True:
+FPS = 60
+
+class Player():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def update():
         if keyboard.is_pressed("w"):
             y -= 1
         if keyboard.is_pressed("s"):
             y += 1
+        if keyboard.is_pressed("a"):
+            x -= 1
+        if keyboard.is_pressed("d"):
+            x += 1
 
-        renderer.rect(10, y, 3, 5)
-        
-        renderer.draw()
-        time.sleep(1/10)
+    def draw():
+        renderer
+
+
+def setup():
+    global renderer
+    renderer = HUSCIIRenderer()
+
+def update():
+    renderer.rect(10, y, 3, 5)
+    
+    renderer.draw()
 
 
 if __name__ == "__main__":
-    main()
+    setup()
+    while True:
+        update()
+        time.sleep(1/FPS)
