@@ -3,7 +3,7 @@ install_if_missing("J:\pymodules", "keyboard")
 
 import keyboard
 import time
-from huscii.renderer import HUSCIIRenderer
+from renderer import HUSCIIRenderer
 
 FPS = 60
 
@@ -11,33 +11,37 @@ class Player():
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.speed = 30/FPS
 
-    def update():
+    def update(self):
         if keyboard.is_pressed("w"):
-            y -= 1
+            self.y -= self.speed * 2/3
         if keyboard.is_pressed("s"):
-            y += 1
+            self.y += self.speed * 2/3
         if keyboard.is_pressed("a"):
-            x -= 1
+            self.x -= self.speed
         if keyboard.is_pressed("d"):
-            x += 1
+            self.x += self.speed
 
-    def draw():
-        renderer
+        renderer.rect(self.x, self.y, 3, 5, "%")
+        renderer.draw()
+        print(self.x, self.y)
 
 
-def setup():
+def main():
     global renderer
     renderer = HUSCIIRenderer()
+    player = Player(renderer.WIDTH/2, renderer.HEIGHT/2)
 
-def update():
-    renderer.rect(10, y, 3, 5)
-    
-    renderer.draw()
+    while True:
+        start = time.time()
+        
+        player.update()
 
+        frametime = time.time() - start
+        print(f"FPS: {min(1/frametime, FPS):.1f}")
+        time.sleep(max(1/FPS - frametime, 0))
+        
 
 if __name__ == "__main__":
-    setup()
-    while True:
-        update()
-        time.sleep(1/FPS)
+    main()

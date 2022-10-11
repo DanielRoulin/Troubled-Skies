@@ -20,7 +20,7 @@ class HUSCIIRenderer:
         """Prints the scene."""
         new_lines = np.full((self.HEIGHT, 1), "\n", self.dtype)
         chars = np.hstack((self.chars, new_lines))
-        screen = "".join(chars.flatten().astype(str))
+        screen = "".join(chars.flatten().astype(str))[:-1]
         print(screen)
         self.clear_chars()
 
