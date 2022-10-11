@@ -2,26 +2,28 @@ import numpy as np
 
 
 class HUSCIIRenderer:
-    def __init__(self, width=80, height=25, bg_char="."):
+    def __init__(self, width=80, height=25, bg_char=".", dtype="S1"):
         """The one and only HUSCII renderer"""
         self.WIDTH = width
         self.HEIGHT = height
         self.BG = bg_char
+        self.dtype = dtype # "S1" for ASCII only, str for Unicode support
         self.clear_chars()
 
 
     def clear_chars(self):
         """Resets the screen to its background char"""
-        self.chars = np.full((self.HEIGHT, self.WIDTH), self.BG, dtype='S1')
+        self.chars = np.full((self.HEIGHT, self.WIDTH), self.BG, dtype=self.dtype)
 
 
     def draw(self):
         """Prints the scene."""
-        new_lines = np.full((self.HEIGHT, 1), "\n", "S1")
+        new_lines = np.full((self.HEIGHT, 1), "\n", self.dtype)
         chars = np.hstack((self.chars, new_lines))
         screen = "".join(chars.flatten().astype(str))
         print(screen)
         self.clear_chars()
+
 
     def round_inputs(f):
         """Decorator, rounds all float functions parameters to int."""
@@ -44,14 +46,22 @@ class HUSCIIRenderer:
 
     @round_inputs
     def point(self, x, y, char):
-        """Sets the point x, y to the character char."""
+        """Sets the point (x, y) to the character char."""
         if x >= 0 and y >= 0 and x < self.WIDTH and y < self.HEIGHT:
             self.chars[y, x] = char
 
+
     @round_inputs
     def rect(self, x, y, w, h, char):
-        """Draws a rectangle whose top left corner is at <x, y> and of width w and height h."""
+        """Draws a rectangle whose top left corner is at (x, y) and of width w and height h."""
+        if x < 0:
+            w = max(w + x, 0)
+            x = 0
+        if y < 0:
+            h = max(h + y, 0)
+            y = 0
         self.chars[y:y+h, x:x+w] = char
+
 
     @round_inputs
     def ellipse(self, x, y, w, h, char):
@@ -123,16 +133,36 @@ class HUSCIIRenderer:
             else:
                 self.point(x, y, char)
 
+
     @round_inputs
     def text(self, x, y, s):
         """Write the text s statring at the x, y location on the screen."""
-        self.chars[y, x:x + len(s)] = list(s[:max(self.WIDTH - x, 0)])
+        if y >= 0 and y < self.HEIGHT and x < self.WIDTH and x > -len(s):
+            start = min(0, x)
+            stop = min(len(s), self.WIDTH - x)
+            print(start, stop)
+            print(s[start:stop])
+            self.chars[y, max(0, x):max(x + len(s), self.WIDTH)] = list(s[start:stop])
+        
+        
+    def sprite(self, x, y, chars):
+        """Draws the 2d array of chars on the screen, (x, y) determines the top left location."""        
+        maxw = max(len(line) for line in chars)
+        chars = np.array([list(line.ljust(maxw)) for line in chars], dtype = self.dtype)
+        w, h = chars.shape
+        self.chars[x:x+w, y:y+h] = chars
+        
     
 
 if __name__ == "__main__":
     r = HUSCIIRenderer()
-    # r.rect(40, 10, 50, 10, "O")
-    # r.ellipse(40, 12, 10, 5, "O")
-    # r.text(60,20,"Hello World!")
-    r.line(3, 5, 70, 20, "O")
+#     r.rect(40, 10, 50, 10, "O")
+#     r.ellipse(40, 12, 10, 5, "O")
+#     r.text(60,20,"Hello World!")
+#     r.line(3, 5, 70, 20, "O")
+#     r.sprite(77, 23, [" O O ",
+#                     "\   /",
+#                     " --- "])
+    r.text(-5, 24, "ABCDEFGHIJ")
+#     r.rect(-15, -25, 10, 10, "A")
     r.draw()
