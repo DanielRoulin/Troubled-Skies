@@ -2,7 +2,7 @@ import numpy as np
 
 
 class HUSCIIRenderer:
-    def __init__(self, width=80, height=25, bg_char=".", dtype="S1"):
+    def __init__(self, width=80, height=25, bg_char=" ", dtype="S1"):
         """The one and only HUSCII renderer"""
         self.WIDTH = width
         self.HEIGHT = height
