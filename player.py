@@ -39,7 +39,7 @@ class Player():
             self.bullets.append(Bullet(self.r, self.x + 1, self.y))
             self.reload_time = self.reload_delay
         else:
-            self.reload_time -= 1
+            self.reload_time -= 1 
 
         
         self.particle_timer -= 1
